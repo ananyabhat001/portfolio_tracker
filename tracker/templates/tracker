@@ -1,0 +1,14 @@
+<h2>Your Portfolio</h2>
+<table border="1">
+<tr><th>Stock</th><th>Quantity</th><th>Purchase Price</th><th>Current Price</th><th>Gain/Loss</th></tr>
+{% for stock in stock_data %}
+<tr>
+  <td>{{ stock.symbol }}</td>
+  <td>{{ stock.quantity }}</td>
+  <td>{{ stock.purchase_price }}</td>
+  <td>{{ stock.current_price }}</td>
+  <td>{{ stock.gain_loss }}</td>
+</tr>
+{% endfor %}
+</table>
+<a href="{% url 'add_stock' %}">Add Stock</a>
