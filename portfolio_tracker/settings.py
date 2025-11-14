@@ -2,7 +2,6 @@ from pathlib import Path
 import dj_database_url
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -11,8 +10,11 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", 'django-insecure-k&t19owa4#72iy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-# Allow all hosts in dev, restrict in production
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",") if not DEBUG else ["*"]
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
+else:
+    # Use your Render domain by default, or comma-separated list from env
+    ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "portfolio-tracker-zzus.onrender.com").split(",")
 
 # Application definition
 INSTALLED_APPS = [
@@ -22,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'tracker',  # Add your app here
+    'tracker',  # Your app
 ]
 
 MIDDLEWARE = [
@@ -54,7 +56,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portfolio_tracker.wsgi.application'
 
-# Database configuration
+# Database
 DATABASES = {
     'default': dj_database_url.parse(
         os.environ.get("DATABASE_URL", "sqlite:///" + str(BASE_DIR / "db.sqlite3"))
@@ -87,5 +89,4 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
