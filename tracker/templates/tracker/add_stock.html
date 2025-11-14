@@ -1,9 +1,39 @@
-<h2>Add Stock</h2>
-<form method="post">{% csrf_token %}
-  User: <input type="text" name="user" required><br>
-  Symbol: <input type="text" name="symbol" required><br>
-  Quantity: <input type="number" name="quantity" min="1" required><br>
-  Purchase Price: <input type="number" step="0.01" name="purchase_price" required><br>
-  <button type="submit">Add</button>
-</form>
-<a href="{% url 'portfolio_list' %}">Back to Portfolio</a>
+from django.shortcuts import render, redirect
+from .alpha_vantage import get_stock_price
+
+portfolio = []
+
+def add_stock(request):
+    error_message = None
+    if request.method == "POST":
+        user = request.POST['user']
+        symbol = request.POST['symbol'].upper().strip()
+        quantity = request.POST['quantity']
+        purchase_price = request.POST['purchase_price']
+        
+        # Validate quantity and purchase_price are numbers and positive
+        try:
+            quantity = int(quantity)
+            purchase_price = float(purchase_price)
+            if quantity <= 0 or purchase_price <= 0:
+                raise ValueError("Quantity and Purchase Price must be positive.")
+        except ValueError:
+            error_message = "Invalid quantity or purchase price. Make sure they are positive numbers."
+
+        # Validate stock symbol by checking live price. None means invalid or not found.
+        if not error_message:
+            live_price = get_stock_price(symbol)
+            if live_price is None:
+                error_message = f"Stock symbol '{symbol}' not found. Please enter a valid symbol."
+
+        # If validation passes, add to portfolio
+        if not error_message:
+            portfolio.append({
+                'user': user,
+                'symbol': symbol,
+                'quantity': quantity,
+                'purchase_price': purchase_price,
+            })
+            return redirect('portfolio_list')
+
+    return render(request, 'tracker/add_stock.html', {'error': error_message})

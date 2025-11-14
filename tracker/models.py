@@ -1,8 +1,10 @@
 from django.db import models
 
-class Portfolio(models.Model):
+class Stock(models.Model):
     user = models.CharField(max_length=100)
-    stock_symbol = models.CharField(max_length=10)
-    quantity = models.IntegerField()
+    symbol = models.CharField(max_length=10)
+    quantity = models.PositiveIntegerField()
     purchase_price = models.FloatField()
-    purchase_date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.symbol} ({self.user})"
